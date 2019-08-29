@@ -20,7 +20,8 @@ func main() {
 	log.Println("Starting")
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", HomeHandler)
+	r.Path("/").Methods("GET").HandlerFunc(HomeHandler)
+	r.Path("/").Methods("POST").HandlerFunc(CreateURIHandler)
 	r.Use(loggingMiddleware)
 	r.NotFoundHandler = loggingMiddleware(http.HandlerFunc(NotFoundHandler))
 	http.Handle("/", r)
