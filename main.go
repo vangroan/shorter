@@ -21,6 +21,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.Path("/").Methods("GET").HandlerFunc(HomeHandler)
+	r.Path("/{path}").Methods("GET").HandlerFunc(RedirectShortHandler)
 	r.Path("/").Methods("POST").HandlerFunc(CreateURIHandler)
 	r.Use(loggingMiddleware)
 	r.NotFoundHandler = loggingMiddleware(http.HandlerFunc(NotFoundHandler))
