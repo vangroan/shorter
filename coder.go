@@ -43,6 +43,8 @@ func EncodeNumber(num uint64) string {
 	return reverse(string(runes))
 }
 
+// DecodeNumber takes a shortened string and
+// converts it to a base 10 number.
 func DecodeNumber(str string) uint64 {
 	var num uint64
 	for i := 0; i < len(str); i++ {
