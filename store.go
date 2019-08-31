@@ -4,20 +4,32 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Storage is a repository that can persistent
+// URL mappings, called location records.
 type Storage interface {
 	SaveLocation(location *Location) error
 	GetLocation(id uint64) (Location, error)
 }
 
-type SQLiteStorage struct {
+// DBStorage persists location records in
+// a database.
+type DBStorage struct {
 	db *gorm.DB
 }
 
-func NewSQLitestorage(db *gorm.DB) SQLiteStorage {
-	return SQLiteStorage{db: db}
+// NewDBStorage creates a location storage
+// backed by a database.
+func NewDBStorage(db *gorm.DB) DBStorage {
+	return DBStorage{db: db}
 }
 
-func (s *SQLiteStorage) SaveLocation(location *Location) error {
+// SaveLocation creates a new location record
+// in the database.
+//
+// On successful create, the primary key of
+// the record will be written to the referenced
+// location argument.
+func (s *DBStorage) SaveLocation(location *Location) error {
 	tx := s.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -37,7 +49,9 @@ func (s *SQLiteStorage) SaveLocation(location *Location) error {
 	return tx.Commit().Error
 }
 
-func (s *SQLiteStorage) GetLocation(id uint64) (Location, error) {
+// GetLocation retrieves an existing
+// location record.
+func (s *DBStorage) GetLocation(id uint64) (Location, error) {
 	var location Location
 
 	if err := s.db.First(&location, id).Error; err != nil {

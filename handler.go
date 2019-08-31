@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -26,10 +27,15 @@ func respondJSON(w http.ResponseWriter, statusCode int, payload interface{}) err
 	return nil
 }
 
+// Controller is a container for the dependencies
+// of the andler functions.
 type Controller struct {
 	store Storage
 }
 
+// NewController creates a new `Controller`.
+//
+// Can fail when required dependencies are `nil`.
 func NewController(store Storage) (*Controller, error) {
 	if store == nil {
 		return nil, fmt.Errorf("Storage is nil")
@@ -63,6 +69,7 @@ func (c *Controller) RedirectShort(w http.ResponseWriter, r *http.Request) {
 	id := DecodeNumber(path)
 	location, err := c.store.GetLocation(id)
 	if err != nil {
+		log.Println("[Error]", err.Error())
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintln(w, "404 Not Found")
 		return

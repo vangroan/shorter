@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// Setup storage service
-	store := NewSQLitestorage(db)
+	store := NewDBStorage(db)
 
 	// Setup controller
 	ctrl, err := NewController(&store)
