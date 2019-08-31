@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 func loggingMiddleware(next http.Handler) http.Handler {
@@ -19,12 +21,33 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func main() {
 	log.Println("Starting")
 
+	// Opening database
+	db, err := gorm.Open("sqlite3", "data.sqlite3")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	if err = db.AutoMigrate(&Location{}).Error; err != nil {
+		panic(err)
+	}
+
+	// Setup storage service
+	store := NewSQLitestorage(db)
+
+	// Setup controller
+	ctrl, err := NewController(&store)
+	if err != nil {
+		panic(err)
+	}
+
+	// Setup Router
 	r := mux.NewRouter()
-	r.Path("/").Methods("GET").HandlerFunc(HomeHandler)
-	r.Path("/{path}").Methods("GET").HandlerFunc(RedirectShortHandler)
-	r.Path("/").Methods("POST").HandlerFunc(CreateURIHandler)
+	r.Path("/").Methods("GET").HandlerFunc(ctrl.Home)
+	r.Path("/{path}").Methods("GET").HandlerFunc(ctrl.RedirectShort)
+	r.Path("/").Methods("POST").HandlerFunc(ctrl.CreateURI)
 	r.Use(loggingMiddleware)
-	r.NotFoundHandler = loggingMiddleware(http.HandlerFunc(NotFoundHandler))
+	r.NotFoundHandler = loggingMiddleware(http.HandlerFunc(ctrl.NotFound))
 	http.Handle("/", r)
 
 	serve := http.Server{

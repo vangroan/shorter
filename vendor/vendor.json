@@ -7,6 +7,18 @@
 			"path": "github.com/gorilla/mux",
 			"revision": "07ba1fd60e210dc5cc6f86ec25dc9ecc7c95c295",
 			"revisionTime": "2018-02-26T05:11:51Z"
+		},
+		{
+			"checksumSHA1": "vbLHU12HMtmkjt1Y+YKUw3JCeD4=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "6ed508ec6a4ecb3531899a69cbc746ccf65a4166",
+			"revisionTime": "2018-02-27T23:43:56Z"
+		},
+		{
+			"checksumSHA1": "YBNroGKEItNe0bENTEKbx71DyGQ=",
+			"path": "github.com/jinzhu/gorm/dialects/sqlite",
+			"revision": "6ed508ec6a4ecb3531899a69cbc746ccf65a4166",
+			"revisionTime": "2018-02-27T23:43:56Z"
 		}
 	],
 	"rootPath": "github.com/vangroan/shorter"
