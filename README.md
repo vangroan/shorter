@@ -3,6 +3,7 @@
 
 ## TODO
 
+* [ ] Dockerfile
 * [ ] UI for creating URLs in browser
 * [ ] Expiry of URL records
 * [ ] Request scoped correlation GUID
