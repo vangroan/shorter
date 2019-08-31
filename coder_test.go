@@ -20,7 +20,12 @@ func TestReverse(t *testing.T) {
 }
 
 func TestEncoder(t *testing.T) {
-	nums := [3]data{
+	nums := [4]data{
+		data{
+			num:      0,
+			expected: "a",
+			actual:   "",
+		},
 		data{
 			num:      10,
 			expected: "k",

@@ -18,6 +18,11 @@ func reverse(s string) string {
 // EncodeNumber takes a base 10 number and
 // converts it to a shortened representation.
 func EncodeNumber(num uint64) string {
+	// Zero case will not be covered by loop
+	if num == 0 {
+		return string(alphabet[0])
+	}
+
 	runes := make([]rune, 0)
 
 	for num > 0 {
