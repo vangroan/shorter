@@ -53,16 +53,22 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) RedirectShort(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	_, ok := vars["path"]
+	path, ok := vars["path"]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, "Failed to retrieve path from URL")
 		return
 	}
 
-	// http.Redirect(w, r, , http.StatusPermanentRedirect)
-	// w.WriteHeader(http.StatusOK)
-	// fmt.Fprintln(w, DecodeNumber(path))
+	id := DecodeNumber(path)
+	location, err := c.store.GetLocation(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintln(w, "404 Not Found")
+		return
+	}
+
+	http.Redirect(w, r, location.URL, http.StatusPermanentRedirect)
 }
 
 // NotFound returns an HTTP Not Found Error

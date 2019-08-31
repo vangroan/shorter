@@ -6,7 +6,7 @@ import (
 
 type Storage interface {
 	SaveLocation(location *Location) error
-	GetLocation(id uint64) Location
+	GetLocation(id uint64) (Location, error)
 }
 
 type SQLiteStorage struct {
@@ -37,6 +37,12 @@ func (s *SQLiteStorage) SaveLocation(location *Location) error {
 	return tx.Commit().Error
 }
 
-func (s *SQLiteStorage) GetLocation(id uint64) Location {
-	return Location{}
+func (s *SQLiteStorage) GetLocation(id uint64) (Location, error) {
+	var location Location
+
+	if err := s.db.First(&location, id).Error; err != nil {
+		return Location{}, err
+	}
+
+	return location, nil
 }
