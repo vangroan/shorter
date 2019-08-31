@@ -5,9 +5,10 @@ import (
 )
 
 type data struct {
-	num      uint64
-	expected string
-	actual   string
+	expectedNum uint64
+	expectedStr string
+	actualNum   uint64
+	actualStr   string
 }
 
 func TestReverse(t *testing.T) {
@@ -22,34 +23,65 @@ func TestReverse(t *testing.T) {
 func TestEncoder(t *testing.T) {
 	nums := [4]data{
 		data{
-			num:      0,
-			expected: "a",
-			actual:   "",
+			expectedNum: 0,
+			expectedStr: "a",
+			actualStr:   "",
 		},
 		data{
-			num:      10,
-			expected: "k",
-			actual:   "",
+			expectedNum: 10,
+			expectedStr: "k",
+			actualStr:   "",
 		},
 		data{
-			num:      64,
-			expected: "ba",
-			actual:   "",
+			expectedNum: 64,
+			expectedStr: "ba",
+			actualStr:   "",
 		},
 		data{
-			num:      4500,
-			expected: "bgu",
-			actual:   "",
+			expectedNum: 4500,
+			expectedStr: "bgu",
+			actualStr:   "",
 		},
 	}
 
 	for i := 0; i < len(nums); i++ {
-		nums[i].actual = EncodeNumber(nums[i].num)
+		nums[i].actualStr = EncodeNumber(nums[i].expectedNum)
 	}
 
 	for _, num := range nums {
-		if num.expected != num.actual {
-			t.Error("Expected:", num.expected, "Actual:", num.actual)
+		if num.expectedStr != num.actualStr {
+			t.Error("Expected:", num.expectedStr, "Actual:", num.actualStr)
+		}
+	}
+}
+
+func TestDecoder(t *testing.T) {
+	nums := [4]data{
+		data{
+			expectedNum: 0,
+			expectedStr: "a",
+		},
+		data{
+			expectedNum: 10,
+			expectedStr: "k",
+		},
+		data{
+			expectedNum: 64,
+			expectedStr: "ba",
+		},
+		data{
+			expectedNum: 4500,
+			expectedStr: "bgu",
+		},
+	}
+
+	for i := 0; i < len(nums); i++ {
+		nums[i].actualNum = DecodeNumber(nums[i].expectedStr)
+	}
+
+	for _, num := range nums {
+		if num.expectedNum != num.actualNum {
+			t.Error("Expected:", num.expectedNum, "Actual:", num.actualNum)
 		}
 	}
 }

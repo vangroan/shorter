@@ -15,6 +15,16 @@ func reverse(s string) string {
 	return string(runes)
 }
 
+func indexOf(str string, char byte) int {
+	for i := 0; i < len(str); i++ {
+		if str[i] == char {
+			return i
+		}
+	}
+
+	return -1
+}
+
 // EncodeNumber takes a base 10 number and
 // converts it to a shortened representation.
 func EncodeNumber(num uint64) string {
@@ -31,4 +41,12 @@ func EncodeNumber(num uint64) string {
 	}
 
 	return reverse(string(runes))
+}
+
+func DecodeNumber(str string) uint64 {
+	var num uint64
+	for i := 0; i < len(str); i++ {
+		num = num*base + uint64(indexOf(alphabet, str[i]))
+	}
+	return num
 }
