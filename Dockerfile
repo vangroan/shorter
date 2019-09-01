@@ -8,9 +8,6 @@ COPY ./*.go /go/src/github.com/vangroan/shorter/
 # Add dependencies
 COPY ./vendor/ /go/src/github.com/vangroan/shorter/vendor/
 
-RUN ls /go/src/github.com/vangroan/shorter/vendor/
-RUN ls /go/src/github.com/vangroan/shorter/vendor/github.com
-
 # 0.    Set some shell flags like `-e` to abort the 
 #       execution in case of any failure (useful if we 
 #       have many ';' commands) and also `-x` to print to 
