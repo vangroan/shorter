@@ -10,6 +10,14 @@ $ sudo docker run shorter:latest -it \
   -e SHORTER_BASEURL='https://localhost:4000/'
 ```
 
+## Usage
+
+Create a short URL.
+
+```bash
+$ curl --data '{"url":"https://www.github.com"}' https://localhost:4000/
+```
+
 ## Configuration
 
 Environment variables for configuring the service.
@@ -23,7 +31,7 @@ Environment variables for configuring the service.
 
 ## TODO
 
-* [ ] Dockerfile
+* [x] Dockerfile
 * [ ] URL validation and javascript injection security
 * [ ] UI for creating URLs in browser
 * [ ] Expiry of URL records
