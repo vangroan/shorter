@@ -5,6 +5,8 @@ ADD ./*.go /go/src/github.com/vangroan/shorter/
 # Add dependencies
 ADD ./vendor/**/* /go/src/
 
+RUN ls /go/src/github.com/
+
 # 0.    Set some shell flags like `-e` to abort the 
 #       execution in case of any failure (useful if we 
 #       have many ';' commands) and also `-x` to print to 
