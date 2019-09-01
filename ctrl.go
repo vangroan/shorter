@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -30,19 +31,21 @@ func respondJSON(w http.ResponseWriter, statusCode int, payload interface{}) err
 // Controller is a container for the dependencies
 // of the andler functions.
 type Controller struct {
-	store Storage
+	store        Storage
+	baseShortURL string
 }
 
 // NewController creates a new `Controller`.
 //
 // Can fail when required dependencies are `nil`.
-func NewController(store Storage) (*Controller, error) {
+func NewController(store Storage, baseShortURL string) (*Controller, error) {
 	if store == nil {
 		return nil, fmt.Errorf("Storage is nil")
 	}
 
 	return &Controller{
-		store: store,
+		store:        store,
+		baseShortURL: baseShortURL,
 	}, nil
 }
 
@@ -125,8 +128,15 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	short := EncodeNumber(location.ID)
+	if strings.HasSuffix(c.baseShortURL, "/") {
+		short = c.baseShortURL + short
+	} else {
+		short = c.baseShortURL + "/" + short
+	}
+
 	response := CreateResponse{
-		Short: EncodeNumber(location.ID),
+		Short: short,
 		Long:  location.URL,
 	}
 	respondJSON(w, http.StatusCreated, response)

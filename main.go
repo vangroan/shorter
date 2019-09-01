@@ -79,7 +79,7 @@ func main() {
 	store := NewDBStorage(db)
 
 	// Setup controller
-	ctrl, err := NewController(&store)
+	ctrl, err := NewController(&store, config.baseURL)
 	if err != nil {
 		panic(err)
 	}
