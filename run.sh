@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sudo docker run -it \
+  --rm \
   --name shorter \
   --publish 4003:8000 \
   --network nginx-proxy \
