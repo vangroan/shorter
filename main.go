@@ -64,6 +64,8 @@ func main() {
 	// Load config
 	config := getConfig()
 
+	log.Printf("Base URL: %s", config.baseURL)
+
 	// Opening database
 	db, err := gorm.Open("sqlite3", config.sqlite)
 	if err != nil {
