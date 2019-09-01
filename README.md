@@ -5,9 +5,9 @@
 
 ```bash
 $ docker build . -t shorter:latest
-$ docker run shorter:latest -it \
-  -p 8000:8000 \
-  -e SHORTER_BASEURL='https://localhost:8000/'
+$ sudo docker run shorter:latest -it \
+  -p 4000:8000 \
+  -e SHORTER_BASEURL='https://localhost:4000/'
 ```
 
 ## Configuration
