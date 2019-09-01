@@ -3,7 +3,7 @@ FROM golang:alpine
 COPY ./*.go /go/src/github.com/vangroan/shorter/
 
 # Add dependencies
-COPY ./vendor/**/* /go/src/github.com/vangroan/vendor/
+COPY ./vendor/ /go/src/github.com/vangroan/
 
 RUN ls /go/src/github.com/vangroan/vendor/
 
