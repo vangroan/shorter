@@ -1,6 +1,13 @@
 
 # URL Shortener
 
+## Running
+
+```bash
+$ docker build . -t shorter:latest
+$ docker run shorter:latest -p 8000:8000
+```
+
 ## TODO
 
 * [ ] Dockerfile
