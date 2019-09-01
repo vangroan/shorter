@@ -3,9 +3,9 @@ FROM golang:alpine
 ADD ./*.go /go/src/github.com/vangroan/shorter/
 
 # Add dependencies
-ADD ./vendor/**/* /go/src/
+ADD ./vendor/**/* /go/src/github.com/vangroan/
 
-RUN ls /go/src/github.com/
+RUN ls /go/src/github.com/vangroan/vendor/
 
 # 0.    Set some shell flags like `-e` to abort the 
 #       execution in case of any failure (useful if we 
