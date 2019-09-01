@@ -19,6 +19,18 @@
 			"path": "github.com/jinzhu/gorm/dialects/sqlite",
 			"revision": "6ed508ec6a4ecb3531899a69cbc746ccf65a4166",
 			"revisionTime": "2018-02-27T23:43:56Z"
+		},
+		{
+			"checksumSHA1": "iqeSAF7imnVsW+iqLqf6kkYn1VU=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "f5c5f50e6090ae76a29240b61ae2a90dd810112e",
+			"revisionTime": "2019-06-03T04:28:36Z"
+		},
+		{
+			"checksumSHA1": "3dzuIDikf9p0keD31OyCNe5EV5k=",
+			"path": "github.com/mattn/go-sqlite3",
+			"revision": "d3c690956bde8789300d0dd7e868189cb88cf6ad",
+			"revisionTime": "2019-08-22T12:55:11Z"
 		}
 	],
 	"rootPath": "github.com/vangroan/shorter"
