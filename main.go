@@ -12,23 +12,41 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-const defaultSQLite string = "data/db.sqlite3"
+const (
+	defaultSQLite  string = "data/db.sqlite3"
+	defaultBaseURL string = "http://localhost"
+	defaultPort    string = "8000"
+)
 
 type config struct {
-	sqlite string
+	sqlite  string
+	baseURL string
+	port    string
 }
 
 func getConfig() config {
-	sqlite := os.Getenv("SHORT_SQLITE")
+	sqlite := os.Getenv("SHORTER_SQLITE")
 	if sqlite == "" {
 		sqlite = defaultSQLite
+	}
+
+	port := os.Getenv("SHORTER_PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	baseURL := os.Getenv("SHORTER_BASEURL")
+	if baseURL == "" {
+		baseURL = defaultBaseURL + ":" + port
 	}
 
 	// Ensure folders exist
 	os.MkdirAll(filepath.Dir(sqlite), os.ModePerm)
 
 	return config{
-		sqlite: sqlite,
+		sqlite:  sqlite,
+		baseURL: baseURL,
+		port:    port,
 	}
 }
 
@@ -61,7 +79,7 @@ func main() {
 	store := NewDBStorage(db)
 
 	// Setup controller
-	ctrl, err := NewController(&store)
+	ctrl, err := NewController(&store, config.baseURL)
 	if err != nil {
 		panic(err)
 	}
@@ -77,11 +95,15 @@ func main() {
 
 	serve := http.Server{
 		Handler:      r,
-		Addr:         ":8000",
+		Addr:         ":" + config.port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	serve.ListenAndServe()
+
+	err = serve.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 
 	log.Println("Stopping")
 }
