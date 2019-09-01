@@ -3,12 +3,34 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
+
+const defaultSQLite string = "data/db.sqlite3"
+
+type config struct {
+	sqlite string
+}
+
+func getConfig() config {
+	sqlite := os.Getenv("SHORT_SQLITE")
+	if sqlite == "" {
+		sqlite = defaultSQLite
+	}
+
+	// Ensure folders exist
+	os.MkdirAll(filepath.Dir(sqlite), os.ModePerm)
+
+	return config{
+		sqlite: sqlite,
+	}
+}
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -21,8 +43,11 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func main() {
 	log.Println("Starting")
 
+	// Load config
+	config := getConfig()
+
 	// Opening database
-	db, err := gorm.Open("sqlite3", "data.sqlite3")
+	db, err := gorm.Open("sqlite3", config.sqlite)
 	if err != nil {
 		panic(err)
 	}

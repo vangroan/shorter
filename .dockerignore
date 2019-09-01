@@ -1,0 +1,17 @@
+
+# VisualStudio Code
+.vscode/
+
+# Ignore files
+.gitignore
+.dockerfile
+
+# Text files
+Dockerfile
+LICENSE
+*.md
+
+# SQLite files
+*.sqlite3
+*.sqlite
+*.sqlite
