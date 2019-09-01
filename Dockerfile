@@ -33,9 +33,14 @@ RUN set -ex && \
 # New image since build is bloated by `gcc`
 FROM golang:alpine as runtime
 
+# Override target file for SQLite3 database
+ENV SHORTER_SQLITE /var/db/shorter.sqlite3
+
 COPY --from=build /usr/bin/shorter /usr/bin/shorter
 
 EXPOSE 8000
+
+VOLUME ["/var/db"]
 
 # Set the binary as the entrypoint of the container
 ENTRYPOINT [ "shorter" ]
