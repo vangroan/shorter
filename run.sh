@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo docker run -it \
+sudo docker run -d \
   --rm \
   --name shorter \
   --publish 4003:8000 \
