@@ -32,7 +32,7 @@ Environment variables for configuring the service.
 ## TODO
 
 * [x] Dockerfile
-* [ ] URL validation and javascript injection security
+* [x] URL validation and javascript injection security
 * [ ] UI for creating URLs in browser
 * [ ] Expiry of URL records
 * [ ] Request scoped correlation GUID
