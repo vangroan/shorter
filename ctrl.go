@@ -24,7 +24,7 @@ func validateURI(uri string) error {
 		return fmt.Errorf("Javascript URI not allowed")
 	}
 
-	if !strings.HasPrefix(uri, "http://") || !strings.HasPrefix(uri, "https://") {
+	if !strings.HasPrefix(uri, "http://") && !strings.HasPrefix(uri, "https://") {
 		return fmt.Errorf("URI must start with either http or https")
 	}
 
