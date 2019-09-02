@@ -6,11 +6,34 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 )
+
+const urlRegex string = `(https?:\/\/(?:www\.|[^w]{3})[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|[^w]{3})[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})`
+
+func validateURI(uri string) error {
+	if strings.HasPrefix(uri, "data:") {
+		return fmt.Errorf("Data URI not allowed")
+	}
+
+	if strings.HasPrefix(uri, "javascript:") {
+		return fmt.Errorf("Javascript URI not allowed")
+	}
+
+	match, err := regexp.Match(urlRegex, []byte(uri))
+	if err != nil {
+		return err
+	}
+	if !match {
+		return fmt.Errorf("URI format invalid")
+	}
+
+	return nil
+}
 
 func respondJSON(w http.ResponseWriter, statusCode int, payload interface{}) error {
 	data, err := json.MarshalIndent(payload, "", "	")
@@ -106,10 +129,21 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	create.URL = strings.TrimSpace(create.URL)
+
 	// Request must contain a URL
 	if create.URL == "" {
 		respondJSON(w, http.StatusBadRequest, ErrorResponse{
 			Message: "No URL provided in POST body",
+		})
+		return
+	}
+
+	// Validate for security
+	err = validateURI(create.URL)
+	if err != nil {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{
+			Message: err.Error(),
 		})
 		return
 	}
