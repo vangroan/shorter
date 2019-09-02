@@ -17,31 +17,31 @@ func TestValidation(t *testing.T) {
 			url:         "javascript:alert(1);",
 			expectError: true,
 			actual:      nil,
-			message:     "Validiation did not catch injected javascript.",
+			message:     "Validation did not catch injected javascript.",
 		},
 		testRecord{
 			url:         "data:text/html,<script>alert('hi');</script>",
 			expectError: true,
 			actual:      nil,
-			message:     "Validiation did not catch injected javascript.",
+			message:     "Validation did not catch injected javascript.",
 		},
 		testRecord{
 			url:         "http://www.test.com",
 			expectError: false,
 			actual:      nil,
-			message:     "Validiation blocked valid URL.",
+			message:     "Validation blocked valid URL.",
 		},
 		testRecord{
 			url:         "https://www.test.com",
 			expectError: false,
 			actual:      nil,
-			message:     "Validiation blocked valid URL.",
+			message:     "Validation blocked valid URL.",
 		},
 		testRecord{
 			url:         "www.test.com",
 			expectError: true,
 			actual:      nil,
-			message:     "Validiation did not catch URL without schema.",
+			message:     "Validation did not catch URL without schema.",
 		},
 	}
 
