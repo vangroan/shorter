@@ -88,6 +88,12 @@ func main() {
 
 	// Setup Router
 	r := mux.NewRouter()
+
+	// This will serve files under http://localhost:8000/assets/<filename>
+	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.HandlerFunc(ctrl.Asset)))
+	r.PathPrefix("/assets").
+		Methods("GET").
+		Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
 	r.Path("/").Methods("GET").HandlerFunc(ctrl.Home)
 	r.Path("/{path}").Methods("GET").HandlerFunc(ctrl.RedirectShort)
 	r.Path("/").Methods("POST").HandlerFunc(ctrl.CreateURI)

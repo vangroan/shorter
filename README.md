@@ -1,7 +1,9 @@
 
 # URL Shortener
 
-## Running
+## Getting Started
+
+Build and run the Docker container.
 
 ```bash
 $ docker build . -t shorter:latest

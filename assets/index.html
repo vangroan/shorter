@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Shorten URL</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container card">
+        <div class="card-body">
+            <h1>Shorten URL</h1>
+            <form id="url-form" method="POST" action="/">
+                <div class="form-group">
+                    <input class="form-control" name="uri" placeholder="Enter URL" />
+                </div>
+                <button class="btn btn-primary" type="submit">Go!</button>
+            </form>
+        </div>
+    </div>
+
+    <script language="javascript" src="/assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script language="javascript">
+        'use strict';
+
+        $(document).ready(function() {
+            $('#url-form').on('submit', function(ev) {
+                ev.preventDefault();
+                var $form = $(this);
+                var uri = $form.find('input[name="uri"]').val();
+                console.log('URI:', uri);
+            });
+        });
+    </script>
+</body>

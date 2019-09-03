@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime"
 	"net/http"
 	"regexp"
 	"strings"
@@ -78,8 +79,18 @@ func NewController(store Storage, baseShortURL string) (*Controller, error) {
 
 // Home is the default page
 func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
+	content, err := ioutil.ReadFile("./assets/index.html")
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "404 Not Found: %s\n", err.Error())
+		respondJSON(w, http.StatusInternalServerError, ErrorResponse{
+			Message: err.Error(),
+		})
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Hello world")
+	w.Header()["Content-Type"] = []string{mime.TypeByExtension(".html")}
+	fmt.Fprintln(w, string(content))
 }
 
 // RedirectShort performs a lookup of the
