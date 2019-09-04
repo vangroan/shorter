@@ -35,6 +35,11 @@ ENV SHORTER_SQLITE /var/db/shorter.sqlite3
 
 COPY --from=build /usr/bin/shorter /usr/bin/shorter
 
+# Static files
+RUN mkdir /assets/
+COPY ./assets/* /assets/
+WORKDIR /assets/
+
 EXPOSE 8000
 
 VOLUME ["/var/db"]
