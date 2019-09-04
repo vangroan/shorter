@@ -6,12 +6,12 @@
 </head>
 
 <body>
-    <div class="container card">
+    <div id="main" class="container card mt-md-5">
         <div class="card-body">
-            <h1>Shorten URL</h1>
             <form id="url-form" method="POST" action="/">
                 <div class="form-group">
-                    <input class="form-control" name="uri" placeholder="Enter URL" />
+                    <input class="form-control form-control-lg" name="uri" placeholder="Enter a URL to shorten" />
+                    <small id="uri-error" class="text-danger"></small >
                 </div>
                 <button class="btn btn-primary" type="submit">Go!</button>
             </form>
@@ -22,12 +22,49 @@
     <script language="javascript">
         'use strict';
 
+        var touched = false;
+        var valid = true;
+
+        function validate(uri) {
+            if (!uri) {
+                return 'Please enter a URL';
+            }
+
+            if (!uri.startsWith('https://') && !uri.startsWith('http://')) {
+                return 'URL must start with "http" or "https"';
+            }
+
+            return null;
+        }
+
         $(document).ready(function() {
+            $('#url-form').find('#uri-error').hide();
+
             $('#url-form').on('submit', function(ev) {
                 ev.preventDefault();
+
                 var $form = $(this);
-                var uri = $form.find('input[name="uri"]').val();
+                var $uri = $form.find('input[name="uri"]');
+                var $uriError = $form.find('#uri-error');
+
+                var uri = $uri.val();
                 console.log('URI:', uri);
+
+                var error = validate(uri);
+                if (error) {
+                    $uri.addClass('is-invalid');
+                    $uriError.text(error);
+                    $uriError.show();
+                } else {
+                    $uri.removeClass('is-invalid');
+                    $uri.addClass('is-valid');
+                    $uriError.text('');
+                    $urierror.hide();
+                }   
+            });
+
+            $('#url-form input[name="uri"]').on('click touchend', function(_ev) {
+                touched = true;
             });
         });
     </script>
