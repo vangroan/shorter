@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <div id="main" class="container card mt-md-5">
+    <div id="main" class="container card mt-4 mt-md-5">
         <div class="card-body">
             <form id="url-form" method="POST" action="/">
                 <div class="form-group">
@@ -15,10 +15,11 @@
                 </div>
                 <button class="btn btn-primary" type="submit">Go!</button>
             </form>
+            <strong><p id="output" class="display-4 text-center"></p></strong>
         </div>
     </div>
 
-    <script language="javascript" src="/assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script language="javascript" src="/assets/js/jquery-3.3.1.min.js"></script>
     <script language="javascript">
         'use strict';
 
@@ -39,6 +40,7 @@
 
         $(document).ready(function() {
             $('#url-form').find('#uri-error').hide();
+            $('#output').hide();
 
             $('#url-form').on('submit', function(ev) {
                 ev.preventDefault();
@@ -48,7 +50,6 @@
                 var $uriError = $form.find('#uri-error');
 
                 var uri = $uri.val();
-                console.log('URI:', uri);
 
                 var error = validate(uri);
                 if (error) {
@@ -59,8 +60,37 @@
                     $uri.removeClass('is-invalid');
                     $uri.addClass('is-valid');
                     $uriError.text('');
-                    $urierror.hide();
-                }   
+                    $uriError.hide();
+
+                    $.ajax({
+                        url: '/',
+                        method: 'post',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify({ "url": uri }),
+                        success: function(data, status, xhr) {
+                            $('#output').text(data.short);
+                            $('#output').show();
+                        },
+                        error: function(xhr, status) {
+                            if (xhr.status == 400) {
+                                // Bad Request
+                                var errorMessage = xhr.responseJSON.message;
+                                if (errorMessage) {
+                                    $uriError.show();
+                                    $uriError.text(errorMessage);
+                                } else {
+                                    $uriError.show();
+                                    $uriError.text('Unknown error');
+                                }
+                            } else {
+                                // Probably internal error
+                                $uriError.show();
+                                $uriError.text('Server error');
+                            }
+                        },
+                    });
+                }                
             });
 
             $('#url-form input[name="uri"]').on('click touchend', function(_ev) {
