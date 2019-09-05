@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -80,6 +83,12 @@ func main() {
 	// Setup storage service
 	store := NewDBStorage(db)
 
+	// Start background jobs
+	cancel := make(chan struct{})
+	var wg sync.WaitGroup
+
+	TimeToLiveJob(cancel, &wg, 10*time.Second)
+
 	// Setup controller
 	ctrl, err := NewController(&store, config.baseURL)
 	if err != nil {
@@ -108,10 +117,42 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	err = serve.ListenAndServe()
-	if err != nil {
-		panic(err)
-	}
+	// Catch Ctrl-C for graceful shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Kill)
 
-	log.Println("Stopping")
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		defer close(cancel)
+		defer close(c)
+
+		for sig := range c {
+			// sig is a ^C, handle it
+			log.Println("Received signal:", sig.String())
+			break
+		}
+
+		ctx, cncl := context.WithTimeout(context.Background(), time.Duration(10*time.Second))
+		defer cncl()
+
+		log.Println("Server shutting down")
+		if err := serve.Shutdown(ctx); err != nil {
+			log.Fatalf("Shutdown(): %s\n", err)
+		}
+	}()
+
+	// Start server
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := serve.ListenAndServe(); err != nil {
+			log.Printf("ListenAndServe(): %s\n", err)
+		}
+		log.Println("Server down")
+	}()
+
+	wg.Wait()
+	log.Println("Done")
 }
