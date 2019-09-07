@@ -157,7 +157,7 @@ func main() {
 
 		log.Println("Server shutting down")
 		if err := serve.Shutdown(ctx); err != nil {
-			log.Fatalf("Shutdown(): %s\n", err)
+			log.Fatalf("Shutdown(): %s", err)
 		}
 	}()
 
@@ -166,7 +166,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 		if err := serve.ListenAndServe(); err != nil {
-			log.Printf("ListenAndServe(): %s\n", err)
+			log.Printf("ListenAndServe(): %s", err)
 		}
 		log.Println("Server down")
 	}()

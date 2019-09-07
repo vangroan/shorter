@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // TimeToLiveJob spawns a background job that expires URLs.
@@ -19,7 +20,7 @@ func TimeToLiveJob(cancel <-chan struct{}, wg *sync.WaitGroup, interval time.Dur
 			case <-ticker.C:
 				store.DeleteSince(time.Now())
 			case <-cancel:
-				log.Println("Time-to-live Job shutting down ")
+				log.Info("Time-to-live Job shutting down ")
 				return
 			}
 		}
