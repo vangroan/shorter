@@ -35,8 +35,8 @@ Environment variables for configuring the service.
 
 * [x] Dockerfile
 * [x] URL validation and javascript injection security
-* [ ] UI for creating URLs in browser
-* [ ] Expiry of URL records
+* [x] UI for creating URLs in browser
+* [x] Expiry of URL records
 * [ ] Request scoped correlation GUID
 * [ ] User sign-up and sign-in
 * [ ] PostgreSQL
