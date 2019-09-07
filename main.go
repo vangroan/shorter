@@ -80,6 +80,8 @@ func main() {
 		panic(err)
 	}
 
+	db.BlockGlobalUpdate(true)
+
 	// Setup storage service
 	store := NewDBStorage(db)
 
@@ -87,7 +89,7 @@ func main() {
 	cancel := make(chan struct{})
 	var wg sync.WaitGroup
 
-	TimeToLiveJob(cancel, &wg, 10*time.Second)
+	TimeToLiveJob(cancel, &wg, 10*time.Second, &store)
 
 	// Setup controller
 	ctrl, err := NewController(&store, config.baseURL)

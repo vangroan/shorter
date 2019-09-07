@@ -165,6 +165,7 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 
 	location := Location{
 		URL:       create.URL,
+		TTL:       60 * 60 * 48, // Two days in seconds
 		CreatedAt: time.Now(),
 	}
 

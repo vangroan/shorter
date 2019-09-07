@@ -30,9 +30,10 @@ type CreateResponse struct {
 // route is handled, it's decoded to
 // a location's primary key.
 type Location struct {
-	ID        uint64 `gorm:"PRIMARY_KEY;AUTO_INCREMENT"`
-	URL       string
-	CreatedAt time.Time
+	ID        uint64    `gorm:"PRIMARY_KEY;AUTO_INCREMENT;Column:id"`
+	URL       string    `gorm:"Column:url"`
+	TTL       uint64    `gorm:"Column:ttl"`
+	CreatedAt time.Time `gorm:"Column:created_at"`
 }
 
 // ErrorResponse is the common

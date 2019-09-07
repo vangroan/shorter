@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -9,6 +11,7 @@ import (
 type Storage interface {
 	SaveLocation(location *Location) error
 	GetLocation(id uint64) (Location, error)
+	DeleteSince(now time.Time) error
 }
 
 // DBStorage persists location records in
@@ -59,4 +62,16 @@ func (s *DBStorage) GetLocation(id uint64) (Location, error) {
 	}
 
 	return location, nil
+}
+
+// DeleteSince hard deletes URLs the given time,
+// minus each URLs time-to-live.
+func (s *DBStorage) DeleteSince(now time.Time) error {
+	err := s.db.
+		Where("ttl <> 0").
+		Where("created_at < datetime(?, -ttl || ' seconds')", now).
+		Delete(Location{}).
+		Error
+
+	return err
 }

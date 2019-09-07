@@ -7,7 +7,7 @@ import (
 )
 
 // TimeToLiveJob spawns a background job that expires URLs.
-func TimeToLiveJob(cancel <-chan struct{}, wg *sync.WaitGroup, interval time.Duration) {
+func TimeToLiveJob(cancel <-chan struct{}, wg *sync.WaitGroup, interval time.Duration, store Storage) {
 	wg.Add(1)
 
 	go func() {
@@ -17,7 +17,7 @@ func TimeToLiveJob(cancel <-chan struct{}, wg *sync.WaitGroup, interval time.Dur
 		for {
 			select {
 			case <-ticker.C:
-				log.Println("TODO: Expire URLs in transaction")
+				store.DeleteSince(time.Now())
 			case <-cancel:
 				log.Println("Time-to-live Job shutting down ")
 				return
