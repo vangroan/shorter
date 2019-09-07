@@ -2,13 +2,16 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -55,13 +58,27 @@ func getConfig() config {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.Method, r.RequestURI)
+		correlationID := uuid.New().String()
+
+		log.
+			WithFields(log.Fields{
+				"correlation-id": correlationID,
+				"method":         r.Method,
+				"url":            r.RequestURI,
+			}).
+			Info("Request")
+
+		r.Header.Set("Correlation-ID", correlationID)
+
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
 	})
 }
 
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.TraceLevel)
+
 	log.Println("Starting")
 
 	// Load config
@@ -101,7 +118,6 @@ func main() {
 	r := mux.NewRouter()
 
 	// This will serve files under http://localhost:8000/assets/<filename>
-	// r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.HandlerFunc(ctrl.Asset)))
 	r.PathPrefix("/assets").
 		Methods("GET").
 		Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))

@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "IkPM2QLv9urri7S49wzroQx9oXA=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
 			"checksumSHA1": "WDwy+CLWP4zY7vELzo0gC477VxU=",
 			"path": "github.com/gorilla/mux",
 			"revision": "07ba1fd60e210dc5cc6f86ec25dc9ecc7c95c295",
@@ -27,10 +33,22 @@
 			"revisionTime": "2019-06-03T04:28:36Z"
 		},
 		{
+			"checksumSHA1": "Z7rkupTQRAZzzTCqDLiSbNR70to=",
+			"path": "github.com/konsorten/go-windows-terminal-sequences",
+			"revision": "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e",
+			"revisionTime": "2019-02-26T22:47:05Z"
+		},
+		{
 			"checksumSHA1": "3dzuIDikf9p0keD31OyCNe5EV5k=",
 			"path": "github.com/mattn/go-sqlite3",
 			"revision": "d3c690956bde8789300d0dd7e868189cb88cf6ad",
 			"revisionTime": "2019-08-22T12:55:11Z"
+		},
+		{
+			"checksumSHA1": "IWfAPYugIKPX+hIJqSkWEuo8sQw=",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "de736cf91b921d56253b4010270681d33fdf7cb5",
+			"revisionTime": "2019-08-07T10:34:36Z"
 		}
 	],
 	"rootPath": "github.com/vangroan/shorter"

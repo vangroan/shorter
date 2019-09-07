@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"mime"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 )
@@ -40,9 +41,18 @@ func validateURI(uri string) error {
 	return nil
 }
 
-func respondJSON(w http.ResponseWriter, statusCode int, payload interface{}) error {
+func respondJSON(w http.ResponseWriter, statusCode int, correlationID string, payload interface{}) error {
+	log.
+		WithFields(log.Fields{
+			"correlation-id": correlationID,
+			"status":         statusCode,
+			"response":       payload,
+		}).
+		Trace("Response")
+
 	data, err := json.MarshalIndent(payload, "", "	")
 	if err != nil {
+		log.Error("Failed to marshal JSON response")
 		return err
 	}
 
@@ -50,6 +60,7 @@ func respondJSON(w http.ResponseWriter, statusCode int, payload interface{}) err
 	w.Header().Add("Content-Type", "application/json")
 	_, err = fmt.Fprintln(w, string(data))
 	if err != nil {
+		log.Error("Failed to write JSON data to response")
 		return err
 	}
 
@@ -83,9 +94,12 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "404 Not Found: %s\n", err.Error())
-		respondJSON(w, http.StatusInternalServerError, ErrorResponse{
-			Message: err.Error(),
-		})
+		respondJSON(w,
+			http.StatusInternalServerError,
+			r.Header.Get("Correlation-ID"),
+			ErrorResponse{
+				Message: err.Error(),
+			})
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -99,18 +113,37 @@ func (c *Controller) Home(w http.ResponseWriter, r *http.Request) {
 // Responds with a HTTP redirect to the long URL.
 func (c *Controller) RedirectShort(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	correlationID := r.Header.Get("Correlation-ID")
 
 	path, ok := vars["path"]
 	if !ok {
+		log.
+			WithFields(log.Fields{
+				"path":           path,
+				"correlation-id": correlationID,
+			}).
+			Error("Failed to retrieve path from URL")
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, "Failed to retrieve path from URL")
 		return
 	}
 
+	log.
+		WithFields(log.Fields{
+			"path":           path,
+			"correlation-id": correlationID,
+		}).
+		Trace("Redirecting")
+
 	id := DecodeNumber(path)
 	location, err := c.store.GetLocation(id)
 	if err != nil {
-		log.Println("[Error]", err.Error())
+		log.
+			WithFields(log.Fields{
+				"path":           path,
+				"correlation-id": correlationID,
+			}).
+			Error(err)
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintln(w, "404 Not Found")
 		return
@@ -127,20 +160,33 @@ func (c *Controller) NotFound(w http.ResponseWriter, r *http.Request) {
 
 // CreateURI takes a number and returns a shortened representation
 func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
+	correlationID := r.Header.Get("Correlation-ID")
+	log.
+		WithFields(log.Fields{
+			"correlation-id": correlationID,
+		}).
+		Info("Creating Short URI")
+
 	content, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		respondJSON(w, http.StatusInternalServerError, ErrorResponse{
-			Message: fmt.Sprint("Failed to read request body: ", err.Error()),
-		})
+		respondJSON(w,
+			http.StatusInternalServerError,
+			correlationID,
+			ErrorResponse{
+				Message: fmt.Sprint("Failed to read request body: ", err.Error()),
+			})
 		return
 	}
 
 	var create CreateRequest
 	err = json.Unmarshal(content, &create)
 	if err != nil {
-		respondJSON(w, http.StatusInternalServerError, ErrorResponse{
-			Message: fmt.Sprint("Failed to read request body: ", err.Error()),
-		})
+		respondJSON(w,
+			http.StatusInternalServerError,
+			correlationID,
+			ErrorResponse{
+				Message: fmt.Sprint("Failed to read request body: ", err.Error()),
+			})
 		return
 	}
 
@@ -148,18 +194,24 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 
 	// Request must contain a URL
 	if create.URL == "" {
-		respondJSON(w, http.StatusBadRequest, ErrorResponse{
-			Message: "No URL provided in POST body",
-		})
+		respondJSON(w,
+			http.StatusBadRequest,
+			correlationID,
+			ErrorResponse{
+				Message: "No URL provided in POST body",
+			})
 		return
 	}
 
 	// Validate for security
 	err = validateURI(create.URL)
 	if err != nil {
-		respondJSON(w, http.StatusBadRequest, ErrorResponse{
-			Message: err.Error(),
-		})
+		respondJSON(w,
+			http.StatusBadRequest,
+			correlationID,
+			ErrorResponse{
+				Message: err.Error(),
+			})
 		return
 	}
 
@@ -172,9 +224,12 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 	// Save will populate short URL in location
 	err = c.store.SaveLocation(&location)
 	if err != nil {
-		respondJSON(w, http.StatusInternalServerError, ErrorResponse{
-			Message: fmt.Sprint("Error saving URL: ", err.Error()),
-		})
+		respondJSON(w,
+			http.StatusInternalServerError,
+			correlationID,
+			ErrorResponse{
+				Message: fmt.Sprint("Error saving URL: ", err.Error()),
+			})
 		return
 	}
 
@@ -189,5 +244,5 @@ func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
 		Short: short,
 		Long:  location.URL,
 	}
-	respondJSON(w, http.StatusCreated, response)
+	respondJSON(w, http.StatusCreated, correlationID, response)
 }
