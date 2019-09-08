@@ -58,20 +58,23 @@ func getConfig() config {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		correlationID := uuid.New().String()
+		correlationID := uuid.New()
+		ctxWithCorrelation := context.WithValue(r.Context(), CorrelationKey, correlationID)
 
-		log.
+		logger := log.
 			WithFields(log.Fields{
-				"correlation-id": correlationID,
+				"correlation-id": correlationID.String(),
 				"method":         r.Method,
 				"url":            r.RequestURI,
-			}).
-			Info("Request")
+				"operation":      "Request",
+			})
+		logger.Info("Incoming Request")
 
-		r.Header.Set("Correlation-ID", correlationID)
+		ctxWithLogger := context.WithValue(ctxWithCorrelation, LogKey, logger)
+		req := r.WithContext(ctxWithLogger)
 
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, req)
 	})
 }
 
@@ -93,7 +96,12 @@ func main() {
 	}
 	defer db.Close()
 
-	if err = db.AutoMigrate(&Location{}).Error; err != nil {
+	err = db.AutoMigrate(
+		&Location{},
+		&UserAccount{},
+		&Subscription{},
+	).Error
+	if err != nil {
 		panic(err)
 	}
 
@@ -123,7 +131,7 @@ func main() {
 		Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
 	r.Path("/").Methods("GET").HandlerFunc(ctrl.Home)
 	r.Path("/{path}").Methods("GET").HandlerFunc(ctrl.RedirectShort)
-	r.Path("/").Methods("POST").HandlerFunc(ctrl.CreateURI)
+	r.Path("/").Methods("POST").Handler(AuthMiddleware(http.HandlerFunc(ctrl.CreateURI)))
 	r.Use(loggingMiddleware)
 	r.NotFoundHandler = loggingMiddleware(http.HandlerFunc(ctrl.NotFound))
 	http.Handle("/", r)

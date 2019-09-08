@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
@@ -160,12 +161,9 @@ func (c *Controller) NotFound(w http.ResponseWriter, r *http.Request) {
 
 // CreateURI takes a number and returns a shortened representation
 func (c *Controller) CreateURI(w http.ResponseWriter, r *http.Request) {
-	correlationID := r.Header.Get("Correlation-ID")
-	log.
-		WithFields(log.Fields{
-			"correlation-id": correlationID,
-		}).
-		Info("Creating Short URI")
+	correlationID := r.Context().Value(CorrelationKey).(uuid.UUID).String()
+	logger := r.Context().Value(LogKey).(*log.Entry)
+	logger.Info("Creating Short URI")
 
 	content, err := ioutil.ReadAll(r.Body)
 	if err != nil {
