@@ -25,9 +25,9 @@ const (
 )
 
 type config struct {
-	sqlite  string
-	baseURL string
-	port    string
+	sqlite        string
+	baseURL       string
+	port          string
 }
 
 func getConfig() config {
